@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SEG-01">
+<meta name="theme-color" content="#5a2d7a">
+<title>SEG-01 – Seguimiento 48-72 h</title>
+<style>
+:root{--pur:#5a2d7a;--pdk:#3a1d5a;--pm:#7a3d9a;--navy:#1a3a5c;--ndk:#0f2540;--gold:#f5b840;--green:#2a8a4a;--red:#c0392b;--rl:#e74c3c;--bg:#f5f0fa;--card:#fff;--brd:#d5c8e8;--txt:#1a2535;--mut:#6a5a7a;--rad:12px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:90px;}
+.header{background:linear-gradient(135deg,var(--pdk),var(--pur) 55%,var(--pm) 100%);color:white;padding:16px 18px 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.22);}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.header-badge{background:var(--gold);color:var(--ndk);font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:1px;}
+.header h1{font-size:18px;font-weight:700;}
+.header-sub{font-size:11px;opacity:.78;}
+#userBadge{margin-top:6px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+.step-bar{display:flex;gap:4px;margin-top:10px;}
+.step-dot{flex:1;height:3px;background:rgba(255,255,255,.25);border-radius:2px;transition:background .3s;}
+.step-dot.done{background:var(--gold);}
+.step-dot.active{background:white;}
+.screen{display:none;}
+.screen.active{display:block;padding:16px;}
+.card{background:var(--card);border-radius:var(--rad);padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(90,45,122,.1);border:1px solid var(--brd);}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pur);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.card-title::before{content:'';width:3px;height:14px;background:var(--pur);border-radius:2px;display:inline-block;}
+label{font-size:13px;font-weight:600;color:var(--txt);display:block;margin-bottom:5px;}
+.hint{font-size:11px;color:var(--mut);margin-bottom:6px;font-style:italic;}
+input[type=text],input[type=number],input[type=time],input[type=date],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--brd);border-radius:8px;font-size:15px;color:var(--txt);background:#faf8fc;appearance:none;-webkit-appearance:none;outline:none;transition:border-color .2s;margin-bottom:12px;}
+input:focus,select:focus,textarea:focus{border-color:var(--pur);background:#fff;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+textarea{resize:vertical;min-height:70px;}
+.tg{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.tb{flex:1;min-width:80px;padding:10px 6px;border:2px solid var(--brd);border-radius:8px;background:#faf8fc;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;text-align:center;transition:all .18s;user-select:none;}
+.tb:active{transform:scale(.96);}
+.s-hosp{background:#e67e22!important;border-color:#d35400!important;color:white!important;}
+.s-alta{background:var(--green)!important;border-color:#1a6a3a!important;color:white!important;}
+.s-uci{background:var(--red)!important;border-color:var(--red)!important;color:white!important;}
+.s-fall{background:#2c3e50!important;border-color:#1a252f!important;color:white!important;}
+.s-ictus{background:#2a6a8a!important;border-color:#1a5a7a!important;color:white!important;}
+.s-ait{background:#6a2a7a!important;border-color:#5a1a6a!important;color:white!important;}
+.s-nd{background:#5a5a5a!important;border-color:#4a4a4a!important;color:white!important;}
+.s-yes{background:var(--green)!important;border-color:var(--green)!important;color:white!important;}
+.s-no{background:var(--rl)!important;border-color:var(--red)!important;color:white!important;}
+.btn{width:100%;padding:15px;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:10px;}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--pur);color:white;}
+.btn-s{background:var(--navy);color:white;}
+.btn-a{background:var(--gold);color:var(--ndk);}
+.btn-o{background:transparent;color:var(--pur);border:2px solid var(--pur);}
+.btn-ok{background:var(--green);color:white;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--brd);display:flex;gap:10px;padding:12px 16px;box-shadow:0 -4px 16px rgba(0,0,0,.08);z-index:100;}
+.bottom-nav .btn{margin:0;}
+.alert{padding:12px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;line-height:1.5;font-weight:500;}
+.aw{background:#fff3cd;border:1px solid #f5b840;color:#7a4f00;}
+.ai{background:#d1ecf1;border:1px solid #0d7c8f;color:#0a4a55;}
+.as{background:#d4edda;border:1px solid #2a8a4a;color:#155724;}
+.rec-item{background:white;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--brd);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.rec-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.rec-id{font-size:13px;font-weight:700;color:var(--navy);}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.bc{background:#d4edda;color:#155724;}
+.bp{background:#fff3cd;color:#7a4f00;}
+.bn{background:#e0e0e0;color:#404040;}
+.rec-det{font-size:12px;color:var(--mut);}
+.rec-sc{font-size:13px;font-weight:700;color:var(--pur);margin-top:4px;}
+.sep{height:1px;background:var(--brd);margin:14px 0;}
+.nav-tabs{display:flex;gap:6px;margin-bottom:16px;}
+.nav-tab{flex:1;padding:8px;border:1.5px solid var(--brd);border-radius:8px;background:white;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;text-align:center;transition:all .15s;}
+.nav-tab.active{background:var(--pur);color:white;border-color:var(--pur);}
+.empty{text-align:center;padding:40px 20px;color:var(--mut);}
+.empty .icon{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(58,29,90,.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:420px;background:white;border-radius:16px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#3a1d5a,#5a2d7a);padding:22px 20px 18px;">
+      <div style="font-size:11px;font-weight:800;color:#f5b840;letter-spacing:1px;margin-bottom:6px;">ESTUDIO ALTOQUE vs. BEFAST 2026</div>
+      <div style="font-size:20px;font-weight:700;color:white;">Identificación del coordinador</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;">Solo necesitas hacerlo una vez en este dispositivo</div>
+    </div>
+    <div style="padding:20px;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Correo Gmail</label>
+      <input type="email" id="loginEmail" placeholder="tucorreo@gmail.com" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;box-sizing:border-box;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Nombre completo</label>
+      <input type="text" id="loginName" placeholder="Nombre Apellido" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;box-sizing:border-box;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Rol en el estudio</label>
+      <select id="loginRole" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:6px;outline:none;background:#f8fafc;box-sizing:border-box;appearance:none;">
+        <option value="">Seleccionar...</option>
+        <option value="EVALT">Evaluador ALTOQUE</option>
+        <option value="EVBEF">Evaluador BEFAST</option>
+        <option value="NEU">Neurólogo consultor</option>
+        <option value="COORD" selected>Coordinador de datos</option>
+        <option value="IP">Investigador Principal</option>
+      </select>
+      <div id="loginError" style="font-size:12px;color:#c0392b;min-height:18px;margin-bottom:10px;font-weight:600;"></div>
+      <button onclick="submitLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#3a1d5a,#5a2d7a);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;">✓ Confirmar y continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-top"><span class="header-badge">SEG-01</span><h1>Seguimiento 48-72 h</h1></div>
+  <div class="header-sub">Lima, Perú · 2026</div>
+  <div id="userBadge"></div>
+  <div class="step-bar" id="stepBar">
+    <div class="step-dot" id="dot0"></div>
+    <div class="step-dot" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+</div>
+
+<!-- S0: INICIO -->
+<div class="screen active" id="screen0">
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('tN','tR',this)">+ Nuevo seguimiento</div>
+    <div class="nav-tab" onclick="switchTab('tR','tN',this)">📋 Mis registros</div>
+  </div>
+  <div id="tN">
+    <div class="alert ai"><strong>Coordinador de datos:</strong> Complete este formulario 48-72 h después de la evaluación inicial revisando la historia clínica del paciente.</div>
+    <div class="card">
+      <div class="card-title">Identificación del caso</div>
+      <label>ID del Paciente</label>
+      <input type="text" id="s0_id" placeholder="ALTO-2026-001" oninput="this.value=this.value.toUpperCase()">
+      <div class="row2">
+        <div><label>Fecha seguimiento</label><input type="date" id="s0_fecha_seg"></div>
+        <div><label>Fecha evaluación inicial</label><input type="date" id="s0_fecha_ini"></div>
+      </div>
+      <div class="row2">
+        <div><label>Horas desde evaluación</label><input type="number" id="s0_horas" placeholder="ej. 52"></div>
+        <div><label>Código coordinador</label><input type="text" id="s0_coord" readonly style="background:#f5f0fa;color:#5a2d7a;font-weight:600;"></div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="goToScreen(1)">Continuar → Estado del paciente</button>
+  </div>
+  <div id="tR" style="display:none;">
+    <div id="recordsList"></div>
+    <div class="sep"></div>
+    <button class="btn btn-a" onclick="exportCSV()">⬇ Exportar todos (CSV)</button>
+    <button class="btn btn-o" onclick="importCSV()">⬆ Importar CSV</button>
+    <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleImport(event)">
+  </div>
+</div>
+
+<!-- S1: ESTADO DEL PACIENTE -->
+<div class="screen" id="screen1">
+  <div class="card">
+    <div class="card-title">Estado hospitalario a las 48-72 h</div>
+    <label>Situación del paciente</label>
+    <div class="tg">
+      <div class="tb" id="sit_hosp" onclick="selT('sit','hosp','s-hosp')">Hospitalizado</div>
+      <div class="tb" id="sit_alta" onclick="selT('sit','alta','s-alta')">Alta hospitalaria</div>
+      <div class="tb" id="sit_uci"  onclick="selT('sit','uci','s-uci')">UCI / Intensivo</div>
+      <div class="tb" id="sit_fall" onclick="selT('sit','fall','s-fall')">Fallecido</div>
+    </div>
+    <label>Diagnóstico de egreso</label>
+    <select id="s1_dx_egreso">
+      <option value="">Seleccionar...</option>
+      <option>Ictus isquémico confirmado</option>
+      <option>Ictus hemorrágico confirmado</option>
+      <option>Hemorragia subaracnoidea (HSA)</option>
+      <option>AIT confirmado</option>
+      <option>Imitador — vértigo periférico</option>
+      <option>Imitador — hipoglucemia</option>
+      <option>Imitador — crisis epiléptica postictal</option>
+      <option>Imitador — síncope vasovagal</option>
+      <option>Imitador — migraña hemipléjica</option>
+      <option>Imitador — otro</option>
+      <option>No determinado</option>
+    </select>
+    <label>¿Cambio de diagnóstico respecto a la impresión inicial?</label>
+    <div class="tg">
+      <div class="tb" id="cambio_no" onclick="selT('cambio','no','s-yes')">No — diagnóstico estable</div>
+      <div class="tb" id="cambio_si" onclick="selT('cambio','si','s-no')">Sí — diagnóstico cambió</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Estado del consentimiento informado</div>
+    <select id="s1_consentimiento">
+      <option value="">—</option>
+      <option>Obtenido — vía directa (CI-01)</option>
+      <option>Obtenido — vía subrogada (CI-02)</option>
+      <option>Obtenido — vía diferida (CI-03)</option>
+      <option>Ratificado por paciente recuperado (CI-04)</option>
+      <option>No obtenido — datos a destruir</option>
+      <option>Retirado — paciente solicitó exclusión</option>
+    </select>
+  </div>
+</div>
+
+<!-- S2: NEUROIMAGEN Y EVOLUCIÓN -->
+<div class="screen" id="screen2">
+  <div class="card">
+    <div class="card-title">Estudio de imagen realizado</div>
+    <label>Tipo de estudio</label>
+    <select id="s2_tipo_estudio">
+      <option value="">—</option>
+      <option>TC craneal sin contraste</option>
+      <option>TC craneal con contraste</option>
+      <option>TC + angioTC</option>
+      <option>RM cerebral con DWI</option>
+      <option>TC + RM-DWI</option>
+      <option>No realizado</option>
+      <option>Rechazado por el paciente</option>
+    </select>
+    <label>Hallazgo principal</label>
+    <select id="s2_hallazgo">
+      <option value="">—</option>
+      <option>Normal — sin lesión aguda</option>
+      <option>Infarto isquémico — circulación anterior</option>
+      <option>Infarto isquémico — circulación posterior</option>
+      <option>Hemorragia intraparenquimatosa</option>
+      <option>Hemorragia subaracnoidea (HSA)</option>
+      <option>Lesión antigua sin cambio agudo</option>
+      <option>No realizado</option>
+    </select>
+    <label>Observaciones del estudio</label>
+    <textarea id="s2_obs_imagen" placeholder="Hallazgos relevantes del informe radiológico..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Evolución clínica</div>
+    <label>Resolución de síntomas</label>
+    <select id="s2_resolucion">
+      <option value="">—</option>
+      <option>Completa</option>
+      <option>Parcial</option>
+      <option>Sin mejoría</option>
+      <option>Deterioro</option>
+      <option>No evaluable</option>
+    </select>
+    <label>Observaciones clínicas</label>
+    <textarea id="s2_obs_clinicas" placeholder="Evolución, tratamiento recibido, complicaciones..."></textarea>
+  </div>
+</div>
+
+<!-- S3: ADJUDICACIÓN Y CIERRE -->
+<div class="screen" id="screen3">
+  <div class="card">
+    <div class="card-title">Adjudicación para el estudio</div>
+    <div class="hint">Diagnóstico definitivo según estándar de referencia compuesto</div>
+    <label>Clasificación final del caso</label>
+    <div class="tg">
+      <div class="tb" id="class_ictus"   onclick="selT('class','ictus','s-ictus')">Ictus</div>
+      <div class="tb" id="class_ait"     onclick="selT('class','ait','s-ait')">AIT</div>
+      <div class="tb" id="class_noictus" onclick="selT('class','noictus','s-nd')">No ictus</div>
+    </div>
+    <label>Estado del formulario SEG-01</label>
+    <select id="s3_estado_seg">
+      <option value="Pendiente">Pendiente — incompleto</option>
+      <option value="Completado">Completado — listo para adjudicación</option>
+      <option value="Cerrado">Cerrado — adjudicado</option>
+    </select>
+    <label>Notas del coordinador</label>
+    <textarea id="s3_notas" placeholder="Incidencias relevantes para el análisis..."></textarea>
+  </div>
+</div>
+
+<!-- S4: CONFIRMACIÓN -->
+<div class="screen" id="screen4">
+  <div class="alert as">✅ Seguimiento guardado correctamente.</div>
+  <div id="syncBadge"></div>
+  <div class="card"><div class="card-title">Resumen del seguimiento</div><div id="sumContent"></div></div>
+  <button class="btn btn-a" onclick="exportSingleCSV()">⬇ Exportar este registro (CSV)</button>
+  <button class="btn btn-s" onclick="window.print()">🖨 Imprimir</button>
+  <button class="btn btn-o" onclick="newRecord()">+ Nuevo seguimiento</button>
+</div>
+
+<div class="bottom-nav" id="bottomNav">
+  <button class="btn btn-o" id="btnBack" onclick="goBack()" style="display:none;">← Atrás</button>
+  <button class="btn btn-p" id="btnNext" onclick="goNext()">Continuar →</button>
+</div>
+
+<script>
+const WEBHOOK_URL="https://script.google.com/macros/s/AKfycbz0hCDxqvwzU4RI4EgRuZv4yYlM9GKgUlg_J98ZpNwLoh1b29ei7lvL2jge24k1xnRQ/exec";
+const SOURCE="seguimiento";
+const SKU='seg_study_user';
+let cur=0,ts={},records=JSON.parse(localStorage.getItem('seg_records')||'[]');
+
+// LOGIN
+function loadUser(){try{return JSON.parse(localStorage.getItem(SKU)||'null');}catch(e){return null;}}
+function saveUser(u){localStorage.setItem(SKU,JSON.stringify(u));}
+function clearUser(){localStorage.removeItem(SKU);}
+function isGmail(e){return /^[^\s@]+@gmail\.com$/i.test(e.trim());}
+function genCode(r,e){return r+'-'+e.split('@')[0].replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,3);}
+function showLogin(){document.getElementById('loginOverlay').style.display='flex';}
+function hideLogin(){document.getElementById('loginOverlay').style.display='none';}
+function submitLogin(){
+  const email=document.getElementById('loginEmail').value,name=document.getElementById('loginName').value,role=document.getElementById('loginRole').value,err=document.getElementById('loginError');
+  if(!isGmail(email)){err.textContent='⚠ Correo Gmail inválido';return;}
+  if(name.trim().length<4){err.textContent='⚠ Ingresa tu nombre completo';return;}
+  if(!role){err.textContent='⚠ Selecciona tu rol';return;}
+  err.textContent='';
+  const u={email:email.trim(),name:name.trim(),role,code:genCode(role,email.trim()),registeredAt:new Date().toISOString()};
+  saveUser(u);localStorage.setItem('hlev_study_user_2026',JSON.stringify(u));applyUser(u);hideLogin();
+}
+function applyUser(u){
+  const el=document.getElementById('s0_coord');if(el){el.value=u.code;el.readOnly=true;}
+  const b=document.getElementById('userBadge');
+  if(b)b.innerHTML=`<span style="font-size:11px;opacity:.9">👤 ${u.name}</span><span style="font-size:10px;opacity:.7;margin-left:6px">${u.code}</span><button onclick="logoutUser()" style="background:rgba(255,255,255,.2);border:none;color:white;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px;cursor:pointer;">Cambiar</button>`;
+}
+function logoutUser(){if(!confirm('¿Cambiar de usuario?'))return;clearUser();location.reload();}
+function portalUser(){const ks=['hlev_study_user_2026',SKU];for(const k of ks){try{const d=localStorage.getItem(k);if(d){const u=JSON.parse(d);if(u&&u.email&&u.name&&u.code)return u;}}catch(e){}}return null;}
+
+// SYNC
+async function syncToSheets(record){
+  if(!WEBHOOK_URL||WEBHOOK_URL.includes("PEGAR_AQUI"))return{ok:false,error:"noconfig"};
+  return new Promise(resolve=>{
+    try{
+      const cb="gsCallback_"+Date.now(),params=new URLSearchParams({source:SOURCE,record:JSON.stringify(record),callback:cb});
+      window[cb]=()=>{clearTimeout(tm);try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});};
+      const sc=document.createElement("script");
+      sc.src=WEBHOOK_URL+"?"+params.toString();
+      sc.onerror=()=>{clearTimeout(tm);try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});};
+      const tm=setTimeout(()=>{try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});},5000);
+      document.body.appendChild(sc);
+    }catch(e){resolve({ok:false,error:"offline"});}
+  });
+}
+function showSync(s){
+  const el=document.getElementById("syncBadge");if(!el)return;
+  const c={syncing:["⏳ Sincronizando…","#FFF3CD","#7A4F00"],ok:["☁️ Guardado en Google Sheets ✓","#D4EDDA","#155724"],offline:["📱 Sin internet — guardado en este dispositivo","#F8D7DA","#721C24"]};
+  const[t,bg,co]=c[s]||c.offline;
+  el.innerHTML=`<div style="padding:10px 14px;border-radius:8px;background:${bg};color:${co};font-size:13px;font-weight:600;margin-bottom:10px;">${t}</div>`;
+}
+
+// NAV
+function goToScreen(n){if(!valS(cur))return;document.getElementById('screen'+cur).classList.remove('active');cur=n;document.getElementById('screen'+n).classList.add('active');updNav();updBar();window.scrollTo(0,0);}
+function goNext(){if(cur<3)goToScreen(cur+1);else saveRecord();}
+function goBack(){if(cur>0)goToScreen(cur-1);}
+function updNav(){
+  document.getElementById('btnBack').style.display=cur>0?'block':'none';
+  const b=document.getElementById('btnNext');
+  if(cur===3){b.textContent='💾 Guardar seguimiento';b.className='btn btn-ok';}
+  else{b.textContent='Continuar →';b.className='btn btn-p';}
+  document.getElementById('bottomNav').style.display=cur===4?'none':'flex';
+}
+function updBar(){for(let i=0;i<4;i++){const d=document.getElementById('dot'+i);d.className='step-dot'+(i<cur?' done':i===cur?' active':'');}}
+function valS(n){if(n===0&&!document.getElementById('s0_id').value.trim()){alert('Ingrese el ID del paciente');return false;}return true;}
+function switchTab(show,hide,el){document.getElementById(show).style.display='block';document.getElementById(hide).style.display='none';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');if(show==='tR')renderRecords();}
+function selT(g,v,cls){ts[g]=v;document.querySelectorAll(`[id^="${g}_"]`).forEach(b=>{b.className='tb';});const el=document.getElementById(`${g}_${v}`);if(el)el.className=`tb ${cls}`;}
+function gV(id){const el=document.getElementById(id);return el?el.value:'';}
+
+// GUARDAR
+function saveRecord(){
+  const r={
+    id:gV('s0_id').trim(),
+    fecha_seg:gV('s0_fecha_seg'),
+    fecha_ini:gV('s0_fecha_ini'),
+    horas_desde:gV('s0_horas'),
+    coordinador:gV('s0_coord'),
+    situacion:ts.sit||'',
+    dx_egreso:gV('s1_dx_egreso'),
+    cambio_dx:ts.cambio||'',
+    consentimiento:gV('s1_consentimiento'),
+    tipo_estudio:gV('s2_tipo_estudio'),
+    hallazgo:gV('s2_hallazgo'),
+    obs_imagen:gV('s2_obs_imagen'),
+    resolucion:gV('s2_resolucion'),
+    obs_clinicas:gV('s2_obs_clinicas'),
+    clasificacion_final:ts.class||'',
+    estado_seg:gV('s3_estado_seg'),
+    notas:gV('s3_notas'),
+    timestamp:new Date().toISOString()
+  };
+  records.push(r);localStorage.setItem('seg_records',JSON.stringify(records));
+  showSummary(r);goToScreen(4);showSync('syncing');
+  syncToSheets(r).then(res=>showSync(res.ok?'ok':'offline'));
+}
+
+function showSummary(r){
+  const co=r.clasificacion_final==='ictus'?'#2a6a8a':r.clasificacion_final==='ait'?'#6a2a7a':'#5a5a5a';
+  document.getElementById('sumContent').innerHTML=`
+    <div style="margin-bottom:8px"><strong>Paciente:</strong> ${r.id} · <strong>Seguimiento:</strong> ${r.fecha_seg}</div>
+    <div style="margin-bottom:8px"><strong>Situación:</strong> ${r.situacion||'—'} · <strong>Dx egreso:</strong> ${r.dx_egreso||'—'}</div>
+    <div style="margin-bottom:8px"><strong>Imagen:</strong> ${r.tipo_estudio||'—'} → ${r.hallazgo||'—'}</div>
+    <div style="margin-bottom:8px"><strong>Consentimiento:</strong> ${r.consentimiento||'—'}</div>
+    <div style="text-align:center;margin-top:10px"><span style="background:${co};color:white;padding:8px 22px;border-radius:20px;font-weight:800;font-size:15px">${r.clasificacion_final||'Pendiente'}</span></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--mut);text-align:center">Estado SEG-01: ${r.estado_seg}</div>`;
+}
+
+function renderRecords(){
+  const el=document.getElementById('recordsList');
+  if(!records.length){el.innerHTML='<div class="empty"><div class="icon">📋</div><p>No hay seguimientos aún.</p></div>';return;}
+  el.innerHTML=records.map((r,i)=>({r,i})).slice().reverse().map(({r,i})=>`
+    <div class="rec-item">
+      <div class="rec-hdr">
+        <div class="rec-id">${r.id}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="badge ${r.estado_seg==='Cerrado'?'bc':r.estado_seg==='Completado'?'bc':'bp'}">${r.estado_seg||'Pendiente'}</div>
+          <button onclick="delRec(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:#c0392b;">🗑</button>
+        </div>
+      </div>
+      <div class="rec-det">${r.fecha_seg} · ${r.horas_desde}h · ${r.coordinador}</div>
+      <div class="rec-sc">${r.clasificacion_final||'Pendiente'} · ${r.dx_egreso||'—'}</div>
+    </div>`).join('');
+}
+
+function delRec(i){const r=records[i];if(!r)return;if(!confirm(`¿Eliminar seguimiento de ${r.id}?\n\nEsta acción no se puede deshacer.`))return;records.splice(i,1);localStorage.setItem('seg_records',JSON.stringify(records));renderRecords();}
+
+const HDR=['ID_Paciente','Fecha_Seguimiento','Fecha_Eval_Inicial','Horas_Desde_Eval','Coordinador',
+  'Situacion_Paciente','Dx_Egreso','Cambio_Dx','Estado_Consentimiento',
+  'Tipo_Estudio_Imagen','Hallazgo_Principal','Obs_Imagen',
+  'Resolucion_Sintomas','Obs_Clinicas',
+  'Clasificacion_Final','Estado_SEG01','Notas','Timestamp'];
+
+function toRow(r){
+  const v=x=>(x===null||x===undefined)?'':String(x).replace(/,/g,';').replace(/\n/g,' ');
+  return[v(r.id),v(r.fecha_seg),v(r.fecha_ini),v(r.horas_desde),v(r.coordinador),
+    v(r.situacion),v(r.dx_egreso),v(r.cambio_dx),v(r.consentimiento),
+    v(r.tipo_estudio),v(r.hallazgo),v(r.obs_imagen),
+    v(r.resolucion),v(r.obs_clinicas),
+    v(r.clasificacion_final),v(r.estado_seg),v(r.notas),v(r.timestamp)].join(',');
+}
+function exportCSV(){if(!records.length){alert('No hay registros.');return;}blob([HDR.join(','),...records.map(toRow)].join('\n'),`SEG_BD_${hoy()}.csv`);}
+function exportSingleCSV(){const r=records[records.length-1];blob([HDR.join(','),toRow(r)].join('\n'),`SEG_${r.id}_${hoy()}.csv`);}
+function blob(c,fn){const b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=fn;a.click();URL.revokeObjectURL(u);}
+function hoy(){return new Date().toISOString().slice(0,10).replace(/-/g,'');}
+function importCSV(){document.getElementById('csvFileInput').click();}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    const lines=ev.target.result.replace(/\uFEFF/,'').split('\n').filter(l=>l.trim());
+    if(lines.length<2){alert('CSV vacío.');return;}
+    const hs=lines[0].split(',');let n=0;
+    for(let i=1;i<lines.length;i++){
+      const vs=lines[i].split(',');const o={};hs.forEach((h,j)=>o[h.trim()]=vs[j]||'');
+      const r={id:o.ID_Paciente,fecha_seg:o.Fecha_Seguimiento,fecha_ini:o.Fecha_Eval_Inicial,horas_desde:o.Horas_Desde_Eval,coordinador:o.Coordinador,situacion:o.Situacion_Paciente,dx_egreso:o.Dx_Egreso,cambio_dx:o.Cambio_Dx,consentimiento:o.Estado_Consentimiento,tipo_estudio:o.Tipo_Estudio_Imagen,hallazgo:o.Hallazgo_Principal,obs_imagen:o.Obs_Imagen,resolucion:o.Resolucion_Sintomas,obs_clinicas:o.Obs_Clinicas,clasificacion_final:o.Clasificacion_Final,estado_seg:o.Estado_SEG01,notas:o.Notas,timestamp:o.Timestamp||new Date().toISOString()};
+      if(r.id&&!records.find(x=>x.id===r.id&&x.timestamp===r.timestamp)){records.push(r);n++;}
+    }
+    localStorage.setItem('seg_records',JSON.stringify(records));alert(`✅ ${n} registro(s) importado(s).`);renderRecords();
+  };
+  rd.readAsText(file);e.target.value='';
+}
+function newRecord(){
+  ts={};document.querySelectorAll('.tb').forEach(b=>b.className='tb');
+  document.querySelectorAll('input[type=text],input[type=number],input[type=time],input[type=date],select,textarea').forEach(el=>el.value='');
+  document.getElementById('s0_fecha_seg').value=new Date().toISOString().slice(0,10);
+  document.getElementById('s3_estado_seg').value='Pendiente';
+  const u=portalUser()||loadUser();if(u)applyUser(u);
+  goToScreen(0);
+}
+window.addEventListener('load',()=>{
+  document.getElementById('s0_fecha_seg').value=new Date().toISOString().slice(0,10);
+  const u=portalUser()||loadUser();
+  if(u){applyUser(u);hideLogin();}else{showLogin();}
+  updNav();updBar();
+});
+</script>
+</body>
+</html>

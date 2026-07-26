@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NEU-01">
+<meta name="theme-color" content="#1a4a1a">
+<title>NEU-01 – Evaluación Neurológica</title>
+<style>
+:root{--gd:#1a4a1a;--gm:#2a6a2a;--gb:#2a8a4a;--navy:#1a3a5c;--ndk:#0f2540;--gold:#f5b840;--red:#c0392b;--rl:#e74c3c;--pur:#5a2d7a;--bg:#f0f4f0;--card:#fff;--brd:#c8d8c8;--txt:#1a2535;--mut:#5a6a5a;--rad:12px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:90px;}
+.header{background:linear-gradient(135deg,#0f2a0f,var(--gd) 50%,var(--gm) 100%);color:white;padding:16px 18px 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.22);}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.header-badge{background:var(--gold);color:var(--ndk);font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:1px;}
+.header h1{font-size:18px;font-weight:700;}
+.header-sub{font-size:11px;opacity:.78;}
+#userBadge{margin-top:6px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+.step-bar{display:flex;gap:4px;margin-top:10px;}
+.step-dot{flex:1;height:3px;background:rgba(255,255,255,.25);border-radius:2px;transition:background .3s;}
+.step-dot.done{background:var(--gold);}
+.step-dot.active{background:white;}
+.screen{display:none;}
+.screen.active{display:block;padding:16px;}
+.card{background:var(--card);border-radius:var(--rad);padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(26,74,26,.1);border:1px solid var(--brd);}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gm);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.card-title::before{content:'';width:3px;height:14px;background:var(--gm);border-radius:2px;display:inline-block;}
+label{font-size:13px;font-weight:600;color:var(--txt);display:block;margin-bottom:5px;}
+.hint{font-size:11px;color:var(--mut);margin-bottom:6px;font-style:italic;}
+input[type=text],input[type=number],input[type=time],input[type=date],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--brd);border-radius:8px;font-size:15px;color:var(--txt);background:#f8fcf8;appearance:none;-webkit-appearance:none;outline:none;transition:border-color .2s;margin-bottom:12px;}
+input:focus,select:focus,textarea:focus{border-color:var(--gb);background:#fff;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+textarea{resize:vertical;min-height:70px;}
+.nihss-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.nihss-item label{font-size:11px;color:var(--mut);margin-bottom:3px;}
+.nihss-item input{margin-bottom:0;font-size:14px;padding:8px 10px;}
+.nihss-box{background:linear-gradient(135deg,var(--gd),var(--gm));color:white;border-radius:10px;padding:14px;text-align:center;margin:10px 0;}
+.nihss-num{font-size:44px;font-weight:800;line-height:1;}
+.nihss-sev{font-size:13px;font-weight:700;margin-top:6px;padding:3px 14px;border-radius:20px;display:inline-block;}
+.tg{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.tb{flex:1;min-width:80px;padding:10px 6px;border:2px solid var(--brd);border-radius:8px;background:#f8fcf8;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;text-align:center;transition:all .18s;user-select:none;}
+.tb:active{transform:scale(.96);}
+.s-ictu{background:#2a6a8a!important;border-color:#1a5a7a!important;color:white!important;}
+.s-hem{background:#8b1a1a!important;border-color:#8b1a1a!important;color:white!important;}
+.s-hsa{background:#5a2d7a!important;border-color:#5a2d7a!important;color:white!important;}
+.s-ait{background:#6a2a7a!important;border-color:#6a2a7a!important;color:white!important;}
+.s-mic{background:#8a6a1a!important;border-color:#8a6a1a!important;color:white!important;}
+.s-nd{background:#5a5a5a!important;border-color:#4a4a4a!important;color:white!important;}
+.s-ant{background:#1a4a8a!important;border-color:#1a4a8a!important;color:white!important;}
+.s-pos{background:var(--red)!important;border-color:var(--red)!important;color:white!important;}
+.s-ind{background:#7f8c8d!important;border-color:#7f8c8d!important;color:white!important;}
+.s-der{background:#1a5a3a!important;border-color:#1a5a3a!important;color:white!important;}
+.s-izq{background:#5a3a1a!important;border-color:#5a3a1a!important;color:white!important;}
+.s-bil{background:#4a1a5a!important;border-color:#4a1a5a!important;color:white!important;}
+.btn{width:100%;padding:15px;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:10px;}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--gm);color:white;}
+.btn-s{background:var(--navy);color:white;}
+.btn-a{background:var(--gold);color:var(--ndk);}
+.btn-o{background:transparent;color:var(--gb);border:2px solid var(--gb);}
+.btn-ok{background:var(--gb);color:white;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--brd);display:flex;gap:10px;padding:12px 16px;box-shadow:0 -4px 16px rgba(0,0,0,.08);z-index:100;}
+.bottom-nav .btn{margin:0;}
+.alert{padding:12px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;line-height:1.5;font-weight:500;}
+.aw{background:#fff3cd;border:1px solid #f5b840;color:#7a4f00;}
+.ai{background:#d1ecf1;border:1px solid #0d7c8f;color:#0a4a55;}
+.as{background:#d4edda;border:1px solid #2a8a4a;color:#155724;}
+.rec-item{background:white;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--brd);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.rec-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.rec-id{font-size:13px;font-weight:700;color:var(--navy);}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.bi{background:#cce5f0;color:#1a4a6a;}
+.ba{background:#e8d5f0;color:#4a1a6a;}
+.bn{background:#e0e0e0;color:#404040;}
+.rec-det{font-size:12px;color:var(--mut);}
+.rec-sc{font-size:13px;font-weight:700;color:var(--gd);margin-top:4px;}
+.sep{height:1px;background:var(--brd);margin:14px 0;}
+.nav-tabs{display:flex;gap:6px;margin-bottom:16px;}
+.nav-tab{flex:1;padding:8px;border:1.5px solid var(--brd);border-radius:8px;background:white;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;text-align:center;transition:all .15s;}
+.nav-tab.active{background:var(--gd);color:white;border-color:var(--gd);}
+.empty{text-align:center;padding:40px 20px;color:var(--mut);}
+.empty .icon{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,37,64,.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:420px;background:white;border-radius:16px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#0f2a0f,#1a4a1a);padding:22px 20px 18px;">
+      <div style="font-size:11px;font-weight:800;color:#f5b840;letter-spacing:1px;margin-bottom:6px;">ESTUDIO ALTOQUE vs. BEFAST 2026</div>
+      <div style="font-size:20px;font-weight:700;color:white;">Identificación del neurólogo</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;">Solo necesitas hacerlo una vez en este dispositivo</div>
+    </div>
+    <div style="padding:20px;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Correo Gmail</label>
+      <input type="email" id="loginEmail" placeholder="tucorreo@gmail.com" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;box-sizing:border-box;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Nombre completo</label>
+      <input type="text" id="loginName" placeholder="Dr. / Dra. Apellido Nombre" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;box-sizing:border-box;">
+      <label style="font-size:13px;font-weight:600;color:#1a2535;display:block;margin-bottom:5px;">Rol en el estudio</label>
+      <select id="loginRole" style="width:100%;padding:12px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:15px;margin-bottom:6px;outline:none;background:#f8fafc;box-sizing:border-box;appearance:none;">
+        <option value="">Seleccionar...</option>
+        <option value="EVALT">Evaluador ALTOQUE</option>
+        <option value="EVBEF">Evaluador BEFAST</option>
+        <option value="NEU" selected>Neurólogo consultor</option>
+        <option value="COORD">Coordinador de datos</option>
+        <option value="IP">Investigador Principal</option>
+      </select>
+      <div id="loginError" style="font-size:12px;color:#c0392b;min-height:18px;margin-bottom:10px;font-weight:600;"></div>
+      <button onclick="submitLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1a4a1a,#2a6a2a);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;">✓ Confirmar y continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-top"><span class="header-badge">NEU-01</span><h1>Evaluación Neurológica</h1></div>
+  <div class="header-sub">Lima, Perú · 2026</div>
+  <div id="userBadge"></div>
+  <div class="step-bar" id="stepBar">
+    <div class="step-dot" id="dot0"></div>
+    <div class="step-dot" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+</div>
+
+<!-- S0: INICIO -->
+<div class="screen active" id="screen0">
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('tN','tR',this)">+ Nueva evaluación</div>
+    <div class="nav-tab" onclick="switchTab('tR','tN',this)">📋 Mis registros</div>
+  </div>
+  <div id="tN">
+    <div class="alert aw">⚠ <strong>CEGAMIENTO:</strong> Evalúe al paciente SIN conocer el resultado de ALTOQUE ni de BEFAST.</div>
+    <div class="card">
+      <div class="card-title">Identificación del caso</div>
+      <label>ID del Paciente</label>
+      <input type="text" id="s0_id" placeholder="ALTO-2026-001" oninput="this.value=this.value.toUpperCase()">
+      <div class="row2">
+        <div><label>Fecha</label><input type="date" id="s0_fecha"></div>
+        <div><label>Hora evaluación</label><input type="time" id="s0_hora_eval"></div>
+      </div>
+      <label>Código del neurólogo</label>
+      <input type="text" id="s0_neu_codigo" readonly style="background:#f0f8f0;color:#1a4a1a;font-weight:600;">
+      <label>Nombre del neurólogo</label>
+      <input type="text" id="s0_neu_nombre" readonly style="background:#f0f8f0;color:#1a4a1a;font-weight:600;">
+    </div>
+    <button class="btn btn-p" onclick="goToScreen(1)">Continuar → Evaluación clínica</button>
+  </div>
+  <div id="tR" style="display:none;">
+    <div id="recordsList"></div>
+    <div class="sep"></div>
+    <button class="btn btn-a" onclick="exportCSV()">⬇ Exportar todos (CSV)</button>
+    <button class="btn btn-o" onclick="importCSV()">⬆ Importar CSV</button>
+    <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleImport(event)">
+  </div>
+</div>
+
+<!-- S1: EVALUACIÓN CLÍNICA -->
+<div class="screen" id="screen1">
+  <div class="card">
+    <div class="card-title">Impresión diagnóstica inicial</div>
+    <div class="hint">Registrar ANTES de conocer resultado de imagen</div>
+    <label>Impresión diagnóstica</label>
+    <div class="tg">
+      <div class="tb" id="dx_ictus_isq" onclick="selT('dx','ictus_isq','s-ictu')">Ictus isquémico</div>
+      <div class="tb" id="dx_ictus_hem" onclick="selT('dx','ictus_hem','s-hem')">Ictus hemorrágico</div>
+      <div class="tb" id="dx_hsa"       onclick="selT('dx','hsa','s-hsa')">HSA</div>
+    </div>
+    <div class="tg">
+      <div class="tb" id="dx_ait"   onclick="selT('dx','ait','s-ait')">AIT</div>
+      <div class="tb" id="dx_mimic" onclick="selT('dx','mimic','s-mic')">Imitador (mimic)</div>
+      <div class="tb" id="dx_nd"    onclick="selT('dx','nd','s-nd')">No determinado</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Localización topográfica y territorio vascular</div>
+    <label>Localización clínica</label>
+    <select id="s1_loc">
+      <option value="">Seleccionar...</option>
+      <option>Cortical</option>
+      <option>Subcortical</option>
+      <option>Tronco encefálico</option>
+      <option>Cerebelo</option>
+      <option>Tálamo / ganglios basales</option>
+      <option>Multifocal</option>
+      <option>Indeterminada</option>
+    </select>
+    <label>Territorio vascular</label>
+    <div class="tg">
+      <div class="tb" id="terr_ant" onclick="selT('terr','ant','s-ant')">Anterior (carotídeo)</div>
+      <div class="tb" id="terr_pos" onclick="selT('terr','pos','s-pos')">Posterior (vertebrobasilar)</div>
+      <div class="tb" id="terr_ind" onclick="selT('terr','ind','s-ind')">Indeterminado</div>
+    </div>
+    <label>Lateralidad</label>
+    <div class="tg">
+      <div class="tb" id="lat_der" onclick="selT('lat','der','s-der')">Derecho</div>
+      <div class="tb" id="lat_izq" onclick="selT('lat','izq','s-izq')">Izquierdo</div>
+      <div class="tb" id="lat_bil" onclick="selT('lat','bil','s-bil')">Bilateral</div>
+      <div class="tb" id="lat_na"  onclick="selT('lat','na','s-nd')">No aplica</div>
+    </div>
+    <label>Síntomas predominantes</label>
+    <textarea id="s1_sint" placeholder="ej. hemiparesia derecha + afasia de inicio súbito..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Antecedentes relevantes</div>
+    <div class="row2">
+      <div><label>AIT / Ictus previo</label><select id="s1_ait"><option value="">—</option><option>Sí</option><option>No</option></select></div>
+      <div><label>Fibrilación auricular</label><select id="s1_fa"><option value="">—</option><option>Sí</option><option>No</option><option>Desconocido</option></select></div>
+    </div>
+    <div class="row2">
+      <div><label>HTA conocida</label><select id="s1_hta"><option value="">—</option><option>Sí</option><option>No</option></select></div>
+      <div><label>DM2</label><select id="s1_dm"><option value="">—</option><option>Sí</option><option>No</option></select></div>
+    </div>
+  </div>
+</div>
+
+<!-- S2: NIHSS -->
+<div class="screen" id="screen2">
+  <div class="alert ai">Registre el NIHSS de admisión ítem a ítem. El total se calcula automáticamente.</div>
+  <div class="card">
+    <div class="card-title">Escala NIHSS</div>
+    <div class="nihss-grid">
+      <div class="nihss-item"><label>1a. Nivel consciencia (0-3)</label><input type="number" id="n1a" min="0" max="3" placeholder="0-3" oninput="updN()"></div>
+      <div class="nihss-item"><label>1b. Preguntas (0-2)</label><input type="number" id="n1b" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>1c. Órdenes (0-2)</label><input type="number" id="n1c" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>2. Mirada conjugada (0-2)</label><input type="number" id="n2" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>3. Visual (0-3)</label><input type="number" id="n3" min="0" max="3" placeholder="0-3" oninput="updN()"></div>
+      <div class="nihss-item"><label>4. Paresia facial (0-3)</label><input type="number" id="n4" min="0" max="3" placeholder="0-3" oninput="updN()"></div>
+      <div class="nihss-item"><label>5a. Brazo izquierdo (0-4)</label><input type="number" id="n5a" min="0" max="4" placeholder="0-4" oninput="updN()"></div>
+      <div class="nihss-item"><label>5b. Brazo derecho (0-4)</label><input type="number" id="n5b" min="0" max="4" placeholder="0-4" oninput="updN()"></div>
+      <div class="nihss-item"><label>6a. Pierna izquierda (0-4)</label><input type="number" id="n6a" min="0" max="4" placeholder="0-4" oninput="updN()"></div>
+      <div class="nihss-item"><label>6b. Pierna derecha (0-4)</label><input type="number" id="n6b" min="0" max="4" placeholder="0-4" oninput="updN()"></div>
+      <div class="nihss-item"><label>7. Ataxia de miembros (0-2)</label><input type="number" id="n7" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>8. Sensibilidad (0-2)</label><input type="number" id="n8" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>9. Lenguaje / Afasia (0-3)</label><input type="number" id="n9" min="0" max="3" placeholder="0-3" oninput="updN()"></div>
+      <div class="nihss-item"><label>10. Disartria (0-2)</label><input type="number" id="n10" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+      <div class="nihss-item"><label>11. Extinción / Inatención (0-2)</label><input type="number" id="n11" min="0" max="2" placeholder="0-2" oninput="updN()"></div>
+    </div>
+    <div class="nihss-box">
+      <div style="font-size:12px;opacity:.8;margin-bottom:4px;">NIHSS TOTAL</div>
+      <div class="nihss-num" id="nihssTotal">—</div>
+      <div style="font-size:12px;opacity:.7;margin-top:2px;">de 42 puntos</div>
+      <div class="nihss-sev" id="nihssSev">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: ADJUDICACIÓN -->
+<div class="screen" id="screen3">
+  <div class="alert aw">⚡ Puede dejarse <strong>Pendiente</strong> y completarse en la reunión semanal (72-96h).</div>
+  <div class="card">
+    <div class="card-title">Adjudicación del estándar de referencia</div>
+    <label>Diagnóstico definitivo</label>
+    <div class="tg">
+      <div class="tb" id="adj_ictus"   onclick="selT('adj','ictus','s-ictu')">Ictus</div>
+      <div class="tb" id="adj_ait"     onclick="selT('adj','ait','s-ait')">AIT</div>
+      <div class="tb" id="adj_noictus" onclick="selT('adj','noictus','s-nd')">No ictus</div>
+    </div>
+    <label>Tipo (si aplica)</label>
+    <select id="s3_tipo">
+      <option value="">—</option>
+      <option>Isquémico</option>
+      <option>Hemorrágico intraparenquimatoso</option>
+      <option>Hemorragia subaracnoidea (HSA)</option>
+      <option>No aplica</option>
+    </select>
+    <label>Territorio vascular final</label>
+    <div class="tg">
+      <div class="tb" id="tf_ant" onclick="selT('tf','ant','s-ant')">Anterior</div>
+      <div class="tb" id="tf_pos" onclick="selT('tf','pos','s-pos')">Posterior</div>
+      <div class="tb" id="tf_ind" onclick="selT('tf','ind','s-ind')">Indeterminado</div>
+    </div>
+    <label>Estado del registro</label>
+    <select id="s3_estado">
+      <option value="Pendiente adjudicación">Pendiente adjudicación</option>
+      <option value="Adjudicado">Adjudicado — cerrado</option>
+    </select>
+    <label>Notas</label>
+    <textarea id="s3_notas" placeholder="Observaciones de la adjudicación..."></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">Cierre del formulario</div>
+    <div class="row2">
+      <div><label>Hora fin formulario</label><input type="time" id="s3_hfin"></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: CONFIRMACIÓN -->
+<div class="screen" id="screen4">
+  <div class="alert as">✅ Registro guardado correctamente.</div>
+  <div id="syncBadge"></div>
+  <div class="card"><div class="card-title">Resumen del caso</div><div id="sumContent"></div></div>
+  <button class="btn btn-a" onclick="exportSingleCSV()">⬇ Exportar este registro (CSV)</button>
+  <button class="btn btn-s" onclick="window.print()">🖨 Imprimir</button>
+  <button class="btn btn-o" onclick="newRecord()">+ Nueva evaluación</button>
+</div>
+
+<div class="bottom-nav" id="bottomNav">
+  <button class="btn btn-o" id="btnBack" onclick="goBack()" style="display:none;">← Atrás</button>
+  <button class="btn btn-p" id="btnNext" onclick="goNext()">Continuar →</button>
+</div>
+
+<script>
+const WEBHOOK_URL="https://script.google.com/macros/s/AKfycbz0hCDxqvwzU4RI4EgRuZv4yYlM9GKgUlg_J98ZpNwLoh1b29ei7lvL2jge24k1xnRQ/exec";
+const SOURCE="neurologo";
+const SKU='neu_study_user';
+let cur=0,ts={},records=JSON.parse(localStorage.getItem('neu_records')||'[]');
+const nids=['n1a','n1b','n1c','n2','n3','n4','n5a','n5b','n6a','n6b','n7','n8','n9','n10','n11'];
+
+// LOGIN
+function loadUser(){try{return JSON.parse(localStorage.getItem(SKU)||'null');}catch(e){return null;}}
+function saveUser(u){localStorage.setItem(SKU,JSON.stringify(u));}
+function clearUser(){localStorage.removeItem(SKU);}
+function isGmail(e){return /^[^\s@]+@gmail\.com$/i.test(e.trim());}
+function genCode(r,e){return r+'-'+e.split('@')[0].replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,3);}
+function showLogin(){document.getElementById('loginOverlay').style.display='flex';}
+function hideLogin(){document.getElementById('loginOverlay').style.display='none';}
+function submitLogin(){
+  const email=document.getElementById('loginEmail').value,name=document.getElementById('loginName').value,role=document.getElementById('loginRole').value,err=document.getElementById('loginError');
+  if(!isGmail(email)){err.textContent='⚠ Correo Gmail inválido';return;}
+  if(name.trim().length<4){err.textContent='⚠ Ingresa tu nombre completo';return;}
+  if(!role){err.textContent='⚠ Selecciona tu rol';return;}
+  err.textContent='';
+  const u={email:email.trim(),name:name.trim(),role,code:genCode(role,email.trim()),registeredAt:new Date().toISOString()};
+  saveUser(u);localStorage.setItem('hlev_study_user_2026',JSON.stringify(u));applyUser(u);hideLogin();
+}
+function applyUser(u){
+  ['s0_neu_codigo','s0_neu_nombre'].forEach((id,i)=>{const el=document.getElementById(id);if(el){el.value=i===0?u.code:u.name;el.readOnly=true;el.style.background='#f0f8f0';el.style.color='#1a4a1a';el.style.fontWeight='600';}});
+  const b=document.getElementById('userBadge');
+  if(b)b.innerHTML=`<span style="font-size:11px;opacity:.9">👤 ${u.name}</span><span style="font-size:10px;opacity:.7;margin-left:6px">${u.code}</span><button onclick="logoutUser()" style="background:rgba(255,255,255,.2);border:none;color:white;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px;cursor:pointer;">Cambiar</button>`;
+}
+function logoutUser(){if(!confirm('¿Cambiar de usuario?'))return;clearUser();location.reload();}
+function portalUser(){const ks=['hlev_study_user_2026',SKU];for(const k of ks){try{const d=localStorage.getItem(k);if(d){const u=JSON.parse(d);if(u&&u.email&&u.name&&u.code)return u;}}catch(e){}}return null;}
+
+// SYNC
+async function syncToSheets(record){
+  if(!WEBHOOK_URL||WEBHOOK_URL.includes("PEGAR_AQUI"))return{ok:false,error:"noconfig"};
+  return new Promise(resolve=>{
+    try{
+      const cb="gsCallback_"+Date.now(),params=new URLSearchParams({source:SOURCE,record:JSON.stringify(record),callback:cb});
+      window[cb]=()=>{clearTimeout(tm);try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});};
+      const sc=document.createElement("script");
+      sc.src=WEBHOOK_URL+"?"+params.toString();
+      sc.onerror=()=>{clearTimeout(tm);try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});};
+      const tm=setTimeout(()=>{try{delete window[cb];document.body.removeChild(sc);}catch(e){}resolve({ok:true});},5000);
+      document.body.appendChild(sc);
+    }catch(e){resolve({ok:false,error:"offline"});}
+  });
+}
+function showSync(s){
+  const el=document.getElementById("syncBadge");if(!el)return;
+  const c={syncing:["⏳ Sincronizando…","#FFF3CD","#7A4F00"],ok:["☁️ Guardado en Google Sheets ✓","#D4EDDA","#155724"],offline:["📱 Sin internet — guardado en este dispositivo","#F8D7DA","#721C24"]};
+  const[t,bg,co]=c[s]||c.offline;
+  el.innerHTML=`<div style="padding:10px 14px;border-radius:8px;background:${bg};color:${co};font-size:13px;font-weight:600;margin-bottom:10px;">${t}</div>`;
+}
+
+// NAVEGACIÓN
+function goToScreen(n){if(!valScreen(cur))return;document.getElementById('screen'+cur).classList.remove('active');cur=n;document.getElementById('screen'+n).classList.add('active');updNav();updBar();window.scrollTo(0,0);}
+function goNext(){if(cur<3)goToScreen(cur+1);else saveRecord();}
+function goBack(){if(cur>0)goToScreen(cur-1);}
+function updNav(){
+  document.getElementById('btnBack').style.display=cur>0?'block':'none';
+  const b=document.getElementById('btnNext');
+  if(cur===3){b.textContent='💾 Guardar registro';b.className='btn btn-ok';}
+  else{b.textContent='Continuar →';b.className='btn btn-p';}
+  document.getElementById('bottomNav').style.display=cur===4?'none':'flex';
+}
+function updBar(){for(let i=0;i<4;i++){const d=document.getElementById('dot'+i);d.className='step-dot'+(i<cur?' done':i===cur?' active':'');}}
+function valScreen(n){if(n===0&&!document.getElementById('s0_id').value.trim()){alert('Ingrese el ID del paciente');return false;}return true;}
+function switchTab(show,hide,el){document.getElementById(show).style.display='block';document.getElementById(hide).style.display='none';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');if(show==='tR')renderRecords();}
+function selT(group,val,cls){ts[group]=val;document.querySelectorAll(`[id^="${group}_"]`).forEach(b=>{b.className='tb';});const el=document.getElementById(`${group}_${val}`);if(el)el.className=`tb ${cls}`;}
+
+// NIHSS
+function updN(){
+  let total=0;nids.forEach(id=>{const v=parseInt(document.getElementById(id).value);if(!isNaN(v))total+=v;});
+  document.getElementById('nihssTotal').textContent=total;
+  let sv='',co='';
+  if(total===0){sv='Sin déficit';co='#2a8a4a';}else if(total<=4){sv='Leve';co='#2a8a4a';}else if(total<=15){sv='Moderado';co='#e67e22';}else if(total<=20){sv='Grave';co='#e74c3c';}else{sv='Muy grave';co='#c0392b';}
+  const s=document.getElementById('nihssSev');s.textContent=sv;s.style.background=co;s.style.color='white';
+}
+function gN(){return nids.reduce((s,id)=>s+(parseInt(document.getElementById(id).value)||0),0);}
+function gV(id){const el=document.getElementById(id);return el?el.value:'';}
+
+// GUARDAR
+function saveRecord(){
+  const r={
+    id:gV('s0_id').trim(),fecha:gV('s0_fecha'),hora_eval:gV('s0_hora_eval'),
+    neurologo_codigo:gV('s0_neu_codigo'),neurologo_nombre:gV('s0_neu_nombre'),
+    impresion_dx:ts.dx||'',localizacion:gV('s1_loc'),
+    territorio:ts.terr||'',lateralidad:ts.lat||'',sintomas:gV('s1_sint'),
+    ait_previo:gV('s1_ait'),fa:gV('s1_fa'),hta:gV('s1_hta'),dm:gV('s1_dm'),
+    nihss_1a:gV('n1a'),nihss_1b:gV('n1b'),nihss_1c:gV('n1c'),nihss_2:gV('n2'),nihss_3:gV('n3'),nihss_4:gV('n4'),
+    nihss_5a:gV('n5a'),nihss_5b:gV('n5b'),nihss_6a:gV('n6a'),nihss_6b:gV('n6b'),
+    nihss_7:gV('n7'),nihss_8:gV('n8'),nihss_9:gV('n9'),nihss_10:gV('n10'),nihss_11:gV('n11'),
+    nihss_total:gN(),
+    dx_definitivo:ts.adj||'',tipo_ictus:gV('s3_tipo'),
+    territorio_final:ts.tf||'',estado:gV('s3_estado'),
+    notas:gV('s3_notas'),hora_fin:gV('s3_hfin'),
+    timestamp:new Date().toISOString()
+  };
+  records.push(r);localStorage.setItem('neu_records',JSON.stringify(records));
+  showSummary(r);goToScreen(4);showSync('syncing');
+  syncToSheets(r).then(res=>showSync(res.ok?'ok':'offline'));
+}
+
+function showSummary(r){
+  const co=r.dx_definitivo==='ictus'?'#2a6a8a':r.dx_definitivo==='ait'?'#6a2a7a':'#5a5a5a';
+  document.getElementById('sumContent').innerHTML=`
+    <div style="margin-bottom:8px"><strong>Paciente:</strong> ${r.id} · <strong>Fecha:</strong> ${r.fecha}</div>
+    <div style="margin-bottom:8px"><strong>Neurólogo:</strong> ${r.neurologo_nombre} (${r.neurologo_codigo})</div>
+    <div style="margin-bottom:8px"><strong>Impresión dx:</strong> ${r.impresion_dx||'—'} · <strong>Territorio:</strong> ${r.territorio||'—'} · <strong>Lateralidad:</strong> ${r.lateralidad||'—'}</div>
+    <div style="margin-bottom:8px"><strong>NIHSS:</strong> <span style="font-size:22px;font-weight:800;color:#1a4a1a">${r.nihss_total}</span>/42</div>
+    <div style="text-align:center;margin-top:10px"><span style="background:${co};color:white;padding:8px 22px;border-radius:20px;font-weight:800;font-size:15px">${r.dx_definitivo||'Pendiente adjudicación'}</span></div>
+    <div style="margin-top:8px;font-size:12px;color:#5a6a5a;text-align:center">Estado: ${r.estado}</div>`;
+}
+
+function renderRecords(){
+  const el=document.getElementById('recordsList');
+  if(!records.length){el.innerHTML='<div class="empty"><div class="icon">🧠</div><p>No hay evaluaciones aún.</p></div>';return;}
+  el.innerHTML=records.map((r,i)=>({r,i})).slice().reverse().map(({r,i})=>`
+    <div class="rec-item">
+      <div class="rec-hdr">
+        <div class="rec-id">${r.id}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="badge ${r.dx_definitivo==='ictus'?'bi':r.dx_definitivo==='ait'?'ba':'bn'}">${r.dx_definitivo||'Pendiente'}</div>
+          <button onclick="delRec(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:#c0392b;">🗑</button>
+        </div>
+      </div>
+      <div class="rec-det">${r.fecha} · ${r.neurologo_codigo} · ${r.estado}</div>
+      <div class="rec-sc">NIHSS: ${r.nihss_total} · ${r.territorio||'—'} · ${r.lateralidad||'—'}</div>
+    </div>`).join('');
+}
+
+function delRec(i){const r=records[i];if(!r)return;if(!confirm(`¿Eliminar evaluación de ${r.id}?\n\nEsta acción no se puede deshacer.`))return;records.splice(i,1);localStorage.setItem('neu_records',JSON.stringify(records));renderRecords();}
+
+const HDR=['ID_Paciente','Fecha','Hora_Eval','Neurologo_Codigo','Neurologo_Nombre',
+  'Impresion_Dx','Localizacion','Territorio','Lateralidad','Sintomas',
+  'AIT_Previo','FA','HTA','DM',
+  'NIHSS_1a','NIHSS_1b','NIHSS_1c','NIHSS_2','NIHSS_3','NIHSS_4',
+  'NIHSS_5a','NIHSS_5b','NIHSS_6a','NIHSS_6b','NIHSS_7','NIHSS_8','NIHSS_9','NIHSS_10','NIHSS_11',
+  'NIHSS_Total','Dx_Definitivo','Tipo_Ictus','Territorio_Final','Estado','Notas','Hora_Fin','Timestamp'];
+
+function toRow(r){
+  const v=x=>(x===null||x===undefined)?'':String(x).replace(/,/g,';').replace(/\n/g,' ');
+  return[v(r.id),v(r.fecha),v(r.hora_eval),v(r.neurologo_codigo),v(r.neurologo_nombre),
+    v(r.impresion_dx),v(r.localizacion),v(r.territorio),v(r.lateralidad),v(r.sintomas),
+    v(r.ait_previo),v(r.fa),v(r.hta),v(r.dm),
+    v(r.nihss_1a),v(r.nihss_1b),v(r.nihss_1c),v(r.nihss_2),v(r.nihss_3),v(r.nihss_4),
+    v(r.nihss_5a),v(r.nihss_5b),v(r.nihss_6a),v(r.nihss_6b),v(r.nihss_7),v(r.nihss_8),
+    v(r.nihss_9),v(r.nihss_10),v(r.nihss_11),v(r.nihss_total),
+    v(r.dx_definitivo),v(r.tipo_ictus),v(r.territorio_final),v(r.estado),v(r.notas),v(r.hora_fin),v(r.timestamp)].join(',');
+}
+function exportCSV(){if(!records.length){alert('No hay registros.');return;}blob([HDR.join(','),...records.map(toRow)].join('\n'),`NEU_BD_${hoy()}.csv`);}
+function exportSingleCSV(){const r=records[records.length-1];blob([HDR.join(','),toRow(r)].join('\n'),`NEU_${r.id}_${hoy()}.csv`);}
+function blob(c,fn){const b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=fn;a.click();URL.revokeObjectURL(u);}
+function hoy(){return new Date().toISOString().slice(0,10).replace(/-/g,'');}
+function importCSV(){document.getElementById('csvFileInput').click();}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    const lines=ev.target.result.replace(/\uFEFF/,'').split('\n').filter(l=>l.trim());
+    if(lines.length<2){alert('CSV vacío.');return;}
+    const hs=lines[0].split(',');let n=0;
+    for(let i=1;i<lines.length;i++){
+      const vs=lines[i].split(',');const o={};hs.forEach((h,j)=>o[h.trim()]=vs[j]||'');
+      const r={id:o.ID_Paciente,fecha:o.Fecha,hora_eval:o.Hora_Eval,neurologo_codigo:o.Neurologo_Codigo,neurologo_nombre:o.Neurologo_Nombre,impresion_dx:o.Impresion_Dx,localizacion:o.Localizacion,territorio:o.Territorio,lateralidad:o.Lateralidad,sintomas:o.Sintomas,ait_previo:o.AIT_Previo,fa:o.FA,hta:o.HTA,dm:o.DM,nihss_1a:o.NIHSS_1a,nihss_1b:o.NIHSS_1b,nihss_1c:o.NIHSS_1c,nihss_2:o.NIHSS_2,nihss_3:o.NIHSS_3,nihss_4:o.NIHSS_4,nihss_5a:o.NIHSS_5a,nihss_5b:o.NIHSS_5b,nihss_6a:o.NIHSS_6a,nihss_6b:o.NIHSS_6b,nihss_7:o.NIHSS_7,nihss_8:o.NIHSS_8,nihss_9:o.NIHSS_9,nihss_10:o.NIHSS_10,nihss_11:o.NIHSS_11,nihss_total:o.NIHSS_Total,dx_definitivo:o.Dx_Definitivo,tipo_ictus:o.Tipo_Ictus,territorio_final:o.Territorio_Final,estado:o.Estado,notas:o.Notas,hora_fin:o.Hora_Fin,timestamp:o.Timestamp||new Date().toISOString()};
+      if(r.id&&!records.find(x=>x.id===r.id&&x.timestamp===r.timestamp)){records.push(r);n++;}
+    }
+    localStorage.setItem('neu_records',JSON.stringify(records));alert(`✅ ${n} registro(s) importado(s).`);renderRecords();
+  };
+  rd.readAsText(file);e.target.value='';
+}
+function newRecord(){
+  ts={};document.querySelectorAll('.tb').forEach(b=>b.className='tb');
+  nids.forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nihssTotal').textContent='—';document.getElementById('nihssSev').textContent='—';
+  document.querySelectorAll('input[type=text],input[type=time],input[type=date],select,textarea').forEach(el=>el.value='');
+  document.getElementById('s0_fecha').value=new Date().toISOString().slice(0,10);
+  document.getElementById('s3_estado').value='Pendiente adjudicación';
+  const u=portalUser()||loadUser();if(u)applyUser(u);
+  goToScreen(0);
+}
+window.addEventListener('load',()=>{
+  document.getElementById('s0_fecha').value=new Date().toISOString().slice(0,10);
+  const u=portalUser()||loadUser();
+  if(u){applyUser(u);hideLogin();}else{showLogin();}
+  updNav();updBar();
+});
+</script>
+</body>
+</html>
